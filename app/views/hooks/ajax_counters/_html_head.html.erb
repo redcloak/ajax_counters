@@ -1,0 +1,15 @@
+<%= javascript_include_tag 'ajax_counters.js', :plugin => :ajax_counters %>
+<%= stylesheet_link_tag 'ajax_counters.css', :plugin => :ajax_counters %>
+
+<%
+# session[:ajax_counters] = {}
+  counters_info = {}
+  if session[:ajax_counters].is_a?(Hash)
+    session[:ajax_counters].each do |k,v|
+      counters_info[k] = { counter: v[:counter], expired: ((v[:last_refresh]+v[:freq].to_i.seconds < Time.now) ? true : false)}
+    end
+  end
+%>
+<script type="text/javascript">
+  var ajax_stored_counters = <%= counters_info.to_json.html_safe %>;
+</script>
