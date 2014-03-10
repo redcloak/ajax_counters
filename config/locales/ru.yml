@@ -1,3 +1,4 @@
 # English strings go here for Rails i18n
 ru:
   ajax_counters: "Асинхронные счетчики"
+  label_refresh_ajax_counters: "Обновить счетчики"

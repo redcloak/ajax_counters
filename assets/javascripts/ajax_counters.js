@@ -25,6 +25,19 @@ $(document).ready(function(){
                 data: 'span_id='+this.id+'&freq='+$(this).attr('data-refresh-freq')});
       }
     });
+
+    $(document.body).on('click', '#refresh_ajax_counters', function(){
+      $('.ac_counter').each(function(index) {
+        $.ajax({url: $(this).attr('data-url'),
+                type: 'get',
+                success: ajax_upd_data,
+                dataType: 'json',
+                data: 'span_id='+this.id+'&freq='+$(this).attr('data-refresh-freq')});
+      });
+      return false;
+    });
+
+    $('<a href="#" id="refresh_ajax_counters" class="in_link"><span>'+refresh_counters_label+'</span></a><br />').prependTo('.my_name_popover_content');
 });
 
 

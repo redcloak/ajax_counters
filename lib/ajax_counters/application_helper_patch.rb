@@ -19,7 +19,7 @@ module AjaxCounters
     module InstanceMethods
 
       def ajax_counter(url, options={refresh_frequency: 180})
-        User.current.ajax_counter(url, options)
+        User.current.ajax_counter(url, options).html_safe
       end
 
     end
