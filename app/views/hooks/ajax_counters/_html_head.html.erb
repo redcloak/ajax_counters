@@ -3,12 +3,14 @@
 
 <%
   counters_info = {}
-  # session[:ajax_counters] = {}
-  if session[:ajax_counters].is_a?(Hash)
-    session[:ajax_counters].each do |k,v|
-      counters_info[k] = { counter: v[:counter], expired: ((v[:last_refresh]+v[:freq].to_i.seconds < Time.now) ? true : false)}
+  # Rails.logger.debug "\v\v session = #{session.inspect}"
+  # session.clear
+  session.each do |k,v|
+    if v.is_a?(Hash) && v.has_key?(:count) && v.has_key?(:time) && v.has_key?(:period)
+      counters_info[k] = { counter: v[:count], expired: ((v[:time]+v[:period].seconds < Time.now) ? true : false), last_refresh: v[:time]}
     end
   end
+
 %>
 <script type="text/javascript">
   var ajax_stored_counters = <%= counters_info.to_json.html_safe %>;

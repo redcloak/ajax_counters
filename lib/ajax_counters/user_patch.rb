@@ -18,10 +18,11 @@ module AjaxCounters
     end
 
     module InstanceMethods
-      def ajax_counter(url, options={refresh_frequency: 180})
+      def ajax_counter(url, options={})
         options[:css] = options[:css] ? 'ac_counter '+options[:css].to_s : 'ac_counter'
+        options[:period] = options[:period] ? options[:period].to_i : 180
         url_md5 = Digest::MD5.hexdigest(url)
-        '<span id="'+url_md5+'" class="'+options[:css]+'" data-url="'+url+'" data-refresh-freq="'+options[:refresh_frequency].to_s+'"></span>'.html_safe
+        '<span data-id="'+url_md5+'" class="'+options[:css]+'" data-url="'+url+'" data-period="'+options[:period].to_s+'"></span>'.html_safe
       end
     end
 

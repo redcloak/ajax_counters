@@ -15,6 +15,7 @@ end
 
 Rails.application.config.to_prepare do
   ApplicationHelper.send(:include, AjaxCounters::ApplicationHelperPatch)
+  ApplicationController.send(:include, AjaxCounters::ApplicationControllerPatch)
   User.send(:include, AjaxCounters::UserPatch)
 end
 

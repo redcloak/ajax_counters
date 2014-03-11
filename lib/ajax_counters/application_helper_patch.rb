@@ -7,7 +7,6 @@ module AjaxCounters
 
       base.send(:include, InstanceMethods)
 
-      # Same as typing in the class
       base.class_eval do
       end
 
@@ -18,7 +17,7 @@ module AjaxCounters
 
     module InstanceMethods
 
-      def ajax_counter(url, options={refresh_frequency: 180})
+      def ajax_counter(url, options={})
         User.current.ajax_counter(url, options).html_safe
       end
 
