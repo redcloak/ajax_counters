@@ -18,8 +18,8 @@ $(document).ready(function () {
 
     $(document.body).on('click', '#refresh_ajax_counters', function () {
         $('.ac_counter').each(function (index) {
-          var cnt = $(this);
-          expired_ajax_counters.push({url: cnt.attr('data-url'), id: cnt.attr('data-id'), period: cnt.attr('data-period')});
+            var cnt = $(this);
+            expired_ajax_counters.push({url: cnt.attr('data-url'), id: cnt.attr('data-id'), period: cnt.attr('data-period')});
         });
         refresh_next_ajax_counter();
         return false;
@@ -36,12 +36,15 @@ function add_refresh_counters_link () {
 
 function refresh_next_ajax_counter () {
   if (expired_ajax_counters.length > 0) {
-    var c = expired_ajax_counters.pop();
-    $.ajax({url: c.url,
-            type: 'get',
-            success: ajax_upd_data,
-            dataType: 'json',
-            data: 'counter_id='+c.id+'&period='+c.period});
+      var c = expired_ajax_counters.pop();
+      $.ajax({url: c.url,
+              type: 'get',
+              success: ajax_upd_data,
+              dataType: 'json',
+              data: 'counter_id='+c.id+'&period='+c.period});
+  }
+  else {
+      $(document.body).trigger('counters_refreshed');
   }
 }
 
@@ -49,13 +52,13 @@ function refresh_next_ajax_counter () {
 function ajax_upd_data (resp) {
   draw_counter(resp.counter_id, resp.counter);
   if (typeof resp.counter_stored == 'undefined' || !resp.counter_stored) {
-    $.ajax({ url: '/ajax_counters/upd_data',
-             type: 'post',
-             success: refresh_next_ajax_counter,
-             data: 'counter_id='+resp.counter_id+'&counter='+resp.counter+'&period='+$('#'+resp.counter_id).attr('data-period') });
+      $.ajax({ url: '/ajax_counters/upd_data',
+               type: 'post',
+               success: refresh_next_ajax_counter,
+               data: 'counter_id='+resp.counter_id+'&counter='+resp.counter+'&period='+$('#'+resp.counter_id).attr('data-period') });
   }
   else {
-    refresh_next_ajax_counter();
+      refresh_next_ajax_counter();
   }
 }
 
