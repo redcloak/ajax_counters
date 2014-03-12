@@ -17,7 +17,8 @@ module AjaxCounters
 
       private
       def ajax_counter_respond(count)
-        if params[:counter_id].is_a?(String)
+        # save to session only if periond > 0
+        if params[:counter_id].is_a?(String) && params[:period].to_i > 0
           session[params[:counter_id]] = {c: count.to_i, t: Time.now, p: params[:period].to_i}
         end
         render :json => {counter: count, counter_id: params[:counter_id], counter_stored: true}
