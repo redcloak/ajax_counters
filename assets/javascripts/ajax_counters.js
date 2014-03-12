@@ -16,7 +16,9 @@ $(document).ready(function () {
 
     refresh_next_ajax_counter();
 
-    $(document.body).on('click', '#refresh_ajax_counters', function () {
+    $(document.body).on('click', '.ac_refresh', function () {
+        $('.ac_refresh').hide();
+        $('<div class="loader ac_preloader"></div>').insertAfter($(this));
         $('.ac_counter').each(function (index) {
             var cnt = $(this);
             expired_ajax_counters.push({url: cnt.attr('data-url'), id: cnt.attr('data-id'), period: cnt.attr('data-period')});
@@ -25,12 +27,17 @@ $(document).ready(function () {
         return false;
     });
 
+    $(document.body).on('counters_refreshed', function () {
+      $('.ac_preloader').remove();
+      $('.ac_refresh').show();
+    });
+
     add_refresh_counters_link();
 });
 
 function add_refresh_counters_link () {
   if ($('#refresh_ajax_counters').length == 0) {
-    $('<a href="#" id="refresh_ajax_counters" class="in_link"><span>'+refresh_counters_label+'</span></a><br />').prependTo('.my_name_popover_content:first');
+    $('<a href="#" id="refresh_ajax_counters" class="in_link ac_refresh"><span>'+refresh_counters_label+'</span></a><br />').prependTo('.my_name_popover_content:first');
   }
 }
 
