@@ -1,3 +1,13 @@
 span.ac_counter:empty {
   display: none;
 }
+
+#sidebar li {
+  padding-top: 2px;
+}
+
+span.count.ac_light {
+  background-color: #40A348;
+}
+
+/*!important*/

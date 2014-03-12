@@ -17,7 +17,9 @@ module AjaxCounters
 
       private
       def ajax_counter_respond(count)
-        session[params[:counter_id]] = {count: count.to_i, time: Time.now, period: params[:period].to_i}
+        if params[:counter_id].is_a?(String)
+          session[params[:counter_id]] = {c: count.to_i, t: Time.now, p: params[:period].to_i}
+        end
         render :json => {counter: count, counter_id: params[:counter_id], counter_stored: true}
       end
 
