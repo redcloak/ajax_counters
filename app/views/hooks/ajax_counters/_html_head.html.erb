@@ -21,6 +21,15 @@
 
 %>
 <script type="text/javascript">
-  var ajax_stored_counters = <%= counters_info.to_json.html_safe %>;
-  var refresh_counters_label = '<%= l(:label_refresh_ajax_counters) %>';
+
+  RMPlus.AC = (function(my){
+    var my = my || {};
+
+    my.ajax_stored_counters = <%= counters_info.to_json.html_safe %>;
+
+    my.refresh_counters_label = '<%= l(:label_refresh_ajax_counters) %>';
+
+    return my;
+  })(RMPlus.AC || {});
+
 </script>

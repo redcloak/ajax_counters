@@ -1,29 +1,80 @@
-var expired_ajax_counters = [];
+
+RMPlus.AC = (function(my){
+  var my = my || {};
+
+  my.expired_ajax_counters = [];
+
+  my.add_refresh_counters_link = function () {
+    if ($('#refresh_ajax_counters').length == 0) {
+      $('<a href="#" id="refresh_ajax_counters" class="in_link ac_refresh"><span>'+RMPlus.AC.refresh_counters_label+'</span></a><br />').prependTo('.my_name_popover_content:first');
+    }
+  }
+
+  my.refresh_next_ajax_counter = function () {
+    if (RMPlus.AC.expired_ajax_counters.length > 0) {
+        var c = RMPlus.AC.expired_ajax_counters.pop();
+        $.ajax({url: c.url,
+                type: 'get',
+                success: RMPlus.AC.ajax_upd_data,
+                error: RMPlus.AC.refresh_next_ajax_counter,
+                dataType: 'json',
+                data: 'counter_id='+c.id+'&period='+c.period});
+    }
+    else {
+        $(document.body).trigger('counters_refreshed');
+    }
+  }
+
+  my.ajax_upd_data = function (resp) {
+    RMPlus.AC.draw_counter(resp.counter_id, resp.counter);
+    if (typeof resp.counter_stored == 'undefined' || !resp.counter_stored) {
+        $.ajax({ url: '/ajax_counters/upd_data',
+                 type: 'post',
+                 success: RMPlus.AC.refresh_next_ajax_counter,
+                 error: RMPlus.AC.refresh_next_ajax_counter,
+                 data: 'counter_id='+resp.counter_id+'&counter='+resp.counter+'&period='+$('#'+resp.counter_id).attr('data-period') });
+    }
+    else {
+        RMPlus.AC.refresh_next_ajax_counter();
+    }
+    $(document.body).trigger('one_counter_refreshed');
+  }
+
+
+  my.draw_counter = function (counter_id, counter) {
+    var c = (counter == 0 || counter == '0') ? '' : counter;
+    // var c = counter;
+    $('.ac_counter[data-id='+counter_id+']').html(c);
+  }
+
+  return my;
+})(RMPlus.AC || {});
 
 $(document).ready(function () {
+
     $('.ac_counter').each(function (index) {
         var counter_expired = true;
         var cnt = $(this);
         var counter_id = $(this).attr('data-id');
-        if (typeof ajax_stored_counters != 'undefined' && typeof ajax_stored_counters[counter_id] != 'undefined') {
-            draw_counter(cnt.attr('data-id'), ajax_stored_counters[counter_id].counter);
-            counter_expired = ajax_stored_counters[counter_id].expired;
+        if (typeof RMPlus.AC.ajax_stored_counters != 'undefined' && typeof RMPlus.AC.ajax_stored_counters[counter_id] != 'undefined') {
+            RMPlus.AC.draw_counter(cnt.attr('data-id'), RMPlus.AC.ajax_stored_counters[counter_id].counter);
+            counter_expired = RMPlus.AC.ajax_stored_counters[counter_id].expired;
         }
         if (counter_expired) {
-            expired_ajax_counters.push({url: cnt.attr('data-url'), id: counter_id, period: cnt.attr('data-period')});
+            RMPlus.AC.expired_ajax_counters.push({url: cnt.attr('data-url'), id: counter_id, period: cnt.attr('data-period')});
         }
     });
 
-    refresh_next_ajax_counter();
+    RMPlus.AC.refresh_next_ajax_counter();
 
     $(document.body).on('click', '.ac_refresh', function () {
         $('.ac_refresh').hide();
         $('<div class="loader ac_preloader"></div>').insertAfter($(this));
         $('.ac_counter').each(function (index) {
             var cnt = $(this);
-            expired_ajax_counters.push({url: cnt.attr('data-url'), id: cnt.attr('data-id'), period: cnt.attr('data-period')});
+            RMPlus.AC.expired_ajax_counters.push({url: cnt.attr('data-url'), id: cnt.attr('data-id'), period: cnt.attr('data-period')});
         });
-        refresh_next_ajax_counter();
+        RMPlus.AC.refresh_next_ajax_counter();
         return false;
     });
 
@@ -32,46 +83,5 @@ $(document).ready(function () {
       $('.ac_refresh').show();
     });
 
-    add_refresh_counters_link();
+    RMPlus.AC.add_refresh_counters_link();
 });
-
-function add_refresh_counters_link () {
-  if ($('#refresh_ajax_counters').length == 0) {
-    $('<a href="#" id="refresh_ajax_counters" class="in_link ac_refresh"><span>'+refresh_counters_label+'</span></a><br />').prependTo('.my_name_popover_content:first');
-  }
-}
-
-function refresh_next_ajax_counter () {
-  if (expired_ajax_counters.length > 0) {
-      var c = expired_ajax_counters.pop();
-      $.ajax({url: c.url,
-              type: 'get',
-              success: ajax_upd_data,
-              dataType: 'json',
-              data: 'counter_id='+c.id+'&period='+c.period});
-  }
-  else {
-      $(document.body).trigger('counters_refreshed');
-  }
-}
-
-
-function ajax_upd_data (resp) {
-  draw_counter(resp.counter_id, resp.counter);
-  if (typeof resp.counter_stored == 'undefined' || !resp.counter_stored) {
-      $.ajax({ url: '/ajax_counters/upd_data',
-               type: 'post',
-               success: refresh_next_ajax_counter,
-               data: 'counter_id='+resp.counter_id+'&counter='+resp.counter+'&period='+$('#'+resp.counter_id).attr('data-period') });
-  }
-  else {
-      refresh_next_ajax_counter();
-  }
-}
-
-
-function draw_counter (counter_id, counter) {
-  var c = (counter == 0 || counter == '0') ? '' : counter;
-  // var c = counter;
-  $('.ac_counter[data-id='+counter_id+']').html(c);
-}
