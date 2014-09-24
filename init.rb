@@ -11,6 +11,8 @@ Redmine::Plugin.register :ajax_counters do
   # settings :default => {:custom_help_url => ''},
   #          :partial => 'settings/ajax_counters'
 
+  menu :custom_menu, :ac_update_counters, '#', caption: Proc.new {('<span>'+I18n.t(:label_refresh_ajax_counters)+'</span>').html_safe}, if: Proc.new { true }, html: {class: 'in_link ac_refresh', id: 'refresh_ajax_counters'}
+
 end
 
 Rails.application.config.to_prepare do
