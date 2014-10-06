@@ -4,12 +4,6 @@ RMPlus.AC = (function(my){
 
   my.expired_ajax_counters = [];
 
-  my.add_refresh_counters_link = function () {
-    if ($('#refresh_ajax_counters').length == 0) {
-      $('<a href="#" id="refresh_ajax_counters" class="in_link ac_refresh"><span>'+RMPlus.AC.refresh_counters_label+'</span></a><br />').prependTo('.my_name_popover_content:first');
-    }
-  }
-
   my.refresh_next_ajax_counter = function () {
     if (RMPlus.AC.expired_ajax_counters.length > 0) {
         var c = RMPlus.AC.expired_ajax_counters.pop();
@@ -82,6 +76,4 @@ $(document).ready(function () {
       $('.ac_preloader').remove();
       $('.ac_refresh').show();
     });
-
-    RMPlus.AC.add_refresh_counters_link();
 });
