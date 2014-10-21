@@ -7,12 +7,14 @@ RMPlus.AC = (function(my){
   my.refresh_next_ajax_counter = function () {
     if (RMPlus.AC.expired_ajax_counters.length > 0) {
         var c = RMPlus.AC.expired_ajax_counters.pop();
-        $.ajax({url: c.url,
-                type: 'get',
-                success: RMPlus.AC.ajax_upd_data,
-                error: RMPlus.AC.refresh_next_ajax_counter,
-                dataType: 'json',
-                data: 'counter_id='+c.id+'&period='+c.period});
+        if (c.id && c.period && c.url) {
+          $.ajax({url: c.url,
+                  type: 'get',
+                  success: RMPlus.AC.ajax_upd_data,
+                  error: RMPlus.AC.refresh_next_ajax_counter,
+                  dataType: 'json',
+                  data: 'counter_id='+c.id+'&period='+c.period});
+        }
     }
     else {
         $(document.body).trigger('counters_refreshed');
