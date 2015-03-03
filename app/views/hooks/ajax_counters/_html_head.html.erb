@@ -8,7 +8,8 @@
   # For reduce session data length:
   # c - counter, t - time, p - refresh period
   cur_time = Time.now
-  session.each do |k,v|
+
+  session.to_hash.each do |k,v|
     if v.is_a?(Hash) && v.has_key?(:c) && v.has_key?(:t) && v.has_key?(:p)
       expired = false
       if v[:t]+v[:p].seconds < cur_time
